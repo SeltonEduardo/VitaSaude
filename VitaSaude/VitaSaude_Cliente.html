@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Agendar horário — Ana Beatriz Estética · VitaSaúde</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#241419;
+    --wine:#6D2E46;
+    --rose:#B36B7D;
+    --champagne:#D9B382;
+    --blush:#F7EEE9;
+    --paper:#FFFDFB;
+    --line:rgba(36,20,25,0.11);
+    --ok:#4C7A5E;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--blush); color:var(--ink);
+    font-family:'Inter', sans-serif; -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:'Fraunces', serif; font-weight:500; margin:0;}
+  a{text-decoration:none; color:inherit;}
+  button{font-family:inherit; cursor:pointer;}
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace; font-size:0.68rem;
+    letter-spacing:0.12em; text-transform:uppercase; color:var(--wine); font-weight:500;
+  }
+
+  /* ---------- TOPBAR ---------- */
+  .topbar{
+    background:var(--paper); border-bottom:1px solid var(--line);
+    position:sticky; top:0; z-index:40;
+  }
+  .topbar-inner{
+    max-width:1040px; margin:0 auto; padding:18px 28px;
+    display:flex; align-items:center; justify-content:space-between; gap:20px;
+  }
+  .back{
+    display:flex; align-items:center; gap:8px; font-size:0.86rem; color:rgba(36,20,25,0.6);
+  }
+  .back:hover{color:var(--wine);}
+  .brand{display:flex; align-items:center; gap:9px; font-family:'Fraunces',serif; font-weight:600; font-size:1.05rem;}
+  .brand-mark{width:22px;height:22px;border-radius:50%; background:conic-gradient(from 220deg, var(--wine), var(--champagne), var(--wine));}
+
+  .steps{
+    display:flex; align-items:center; gap:8px; font-size:0.78rem;
+    color:rgba(36,20,25,0.4); font-weight:600;
+  }
+  .steps .dot{
+    width:6px; height:6px; border-radius:50%; background:var(--line);
+  }
+  .steps span.active{color:var(--wine);}
+  .steps .dot.active{background:var(--wine);}
+
+  /* ---------- LAYOUT ---------- */
+  .page{
+    max-width:1040px; margin:0 auto; padding:40px 28px 100px;
+    display:grid; grid-template-columns:1.5fr 1fr; gap:34px; align-items:start;
+  }
+
+  /* ---------- PROFILE CARD ---------- */
+  .profile-card{
+    background:var(--paper); border-radius:22px; padding:26px;
+    display:flex; gap:18px; align-items:center; border:1px solid var(--line);
+    margin-bottom:28px;
+  }
+  .avatar{
+    width:64px; height:64px; border-radius:50%; flex-shrink:0;
+    background:linear-gradient(135deg, var(--rose), var(--wine));
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces',serif; color:var(--paper); font-size:1.4rem; font-weight:600;
+  }
+  .profile-info h1{font-size:1.25rem;}
+  .profile-meta{
+    display:flex; align-items:center; gap:10px; margin-top:6px;
+    font-size:0.84rem; color:rgba(36,20,25,0.6);
+  }
+  .stars{color:var(--champagne); letter-spacing:1px;}
+
+  /* ---------- SECTION CARD ---------- */
+  .section-card{
+    background:var(--paper); border-radius:22px; padding:26px 26px 28px;
+    border:1px solid var(--line); margin-bottom:22px;
+  }
+  .section-card h2{font-size:1.05rem; margin-bottom:4px;}
+  .section-sub{font-size:0.84rem; color:rgba(36,20,25,0.55); margin-bottom:18px;}
+
+  /* services */
+  .service-list{display:flex; flex-direction:column; gap:10px;}
+  .service{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:15px 16px; border-radius:14px; border:1.5px solid var(--line);
+    transition:border-color 0.2s ease, background 0.2s ease;
+  }
+  .service:hover{border-color:var(--rose);}
+  .service.selected{border-color:var(--wine); background:rgba(109,46,70,0.05);}
+  .service-name{font-weight:600; font-size:0.94rem;}
+  .service-dur{font-size:0.8rem; color:rgba(36,20,25,0.5); margin-top:2px;}
+  .service-price{font-family:'IBM Plex Mono', monospace; font-size:0.88rem; font-weight:500; color:var(--wine); white-space:nowrap;}
+
+  /* date chips */
+  .date-row{display:flex; gap:10px; overflow-x:auto; padding-bottom:4px;}
+  .date-chip{
+    flex-shrink:0; width:64px; padding:12px 0; border-radius:14px;
+    border:1.5px solid var(--line); text-align:center; transition:all 0.2s ease;
+  }
+  .date-chip .d{font-size:0.68rem; color:rgba(36,20,25,0.5); text-transform:uppercase; font-weight:600;}
+  .date-chip .n{font-family:'Fraunces',serif; font-size:1.25rem; margin-top:2px;}
+  .date-chip:hover{border-color:var(--rose);}
+  .date-chip.selected{border-color:var(--wine); background:var(--wine); color:var(--paper);}
+  .date-chip.selected .d{color:rgba(255,255,255,0.75);}
+
+  /* time slots */
+  .slot-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:16px;}
+  .slot{
+    padding:11px 0; text-align:center; border-radius:10px; border:1.5px solid var(--line);
+    font-family:'IBM Plex Mono', monospace; font-size:0.84rem; transition:all 0.2s ease;
+  }
+  .slot:hover{border-color:var(--rose);}
+  .slot.selected{background:var(--wine); border-color:var(--wine); color:var(--paper);}
+  .slot.disabled{color:rgba(36,20,25,0.25); border-color:var(--line); background:rgba(36,20,25,0.03); pointer-events:none;}
+
+  /* form */
+  .form-row{display:flex; flex-direction:column; gap:16px;}
+  .field label{font-size:0.82rem; font-weight:600; color:rgba(36,20,25,0.7); display:block; margin-bottom:6px;}
+  .field input{
+    width:100%; padding:12px 14px; border-radius:12px; border:1.5px solid var(--line);
+    font-family:inherit; font-size:0.92rem; background:var(--paper); color:var(--ink);
+  }
+  .field input:focus{outline:none; border-color:var(--wine);}
+
+  .btn-primary{
+    background:var(--wine); color:var(--paper); border:none; padding:16px 26px;
+    border-radius:14px; font-size:0.95rem; font-weight:600; width:100%;
+    transition:background 0.2s ease, opacity 0.2s ease;
+  }
+  .btn-primary:hover{background:#5A2439;}
+  .btn-primary:disabled{background:rgba(36,20,25,0.15); cursor:not-allowed;}
+
+  /* ---------- SUMMARY (receipt) ---------- */
+  .summary{
+    background:var(--ink); color:var(--paper); border-radius:22px;
+    padding:28px 26px; position:sticky; top:96px;
+  }
+  .summary .eyebrow{color:var(--champagne);}
+  .summary h3{color:var(--paper); font-size:1.1rem; margin-top:6px;}
+  .summary-line{
+    display:flex; justify-content:space-between; align-items:flex-start;
+    padding:14px 0; border-top:1px dashed rgba(255,255,255,0.18);
+    font-size:0.88rem;
+  }
+  .summary-line .k{color:rgba(255,255,255,0.5);}
+  .summary-line .v{color:var(--paper); font-weight:600; text-align:right;}
+  .summary-line .v.muted{color:rgba(255,255,255,0.35); font-weight:400;}
+  .summary-total{
+    display:flex; justify-content:space-between; align-items:center;
+    margin-top:16px; padding-top:18px; border-top:1px solid rgba(255,255,255,0.16);
+  }
+  .summary-total .k{font-size:0.86rem; color:rgba(255,255,255,0.6);}
+  .summary-total .v{font-family:'Fraunces',serif; font-size:1.5rem; color:var(--champagne);}
+
+  /* ---------- CONFIRMED STATE ---------- */
+  .confirmed{display:none;}
+  .confirmed.show{display:block;}
+  .booking-flow.hidden{display:none;}
+  .confirm-card{
+    background:var(--paper); border-radius:24px; padding:48px 40px; text-align:center;
+    border:1px solid var(--line);
+  }
+  .check{
+    width:56px; height:56px; border-radius:50%; background:var(--ok); color:var(--paper);
+    display:flex; align-items:center; justify-content:center; margin:0 auto 20px; font-size:1.5rem;
+  }
+  .confirm-card h2{font-size:1.6rem;}
+  .confirm-card p{color:rgba(36,20,25,0.6); margin-top:10px; font-size:0.96rem;}
+  .confirm-summary{
+    background:var(--blush); border-radius:16px; padding:22px; margin:28px 0;
+    text-align:left; font-size:0.9rem;
+  }
+  .confirm-summary div{display:flex; justify-content:space-between; padding:8px 0;}
+  .confirm-summary div:not(:last-child){border-bottom:1px solid var(--line);}
+  .confirm-actions{display:flex; gap:12px; justify-content:center; flex-wrap:wrap;}
+  .btn-ghost2{
+    padding:14px 22px; border-radius:12px; border:1.5px solid var(--line);
+    font-size:0.88rem; font-weight:600; color:var(--ink);
+  }
+  .btn-ghost2:hover{border-color:var(--wine);}
+
+  @media (max-width:760px){
+    .page{grid-template-columns:1fr;}
+    .summary{position:static;}
+    .slot-grid{grid-template-columns:repeat(3,1fr);}
+    .steps{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="#" class="back">← Voltar</a>
+    <div class="brand"><span class="brand-mark"></span>VitaSaúde</div>
+    <div class="steps">
+      <span class="active">Serviço</span><span class="dot active"></span>
+      <span id="stepDate">Data</span><span class="dot" id="dotDate"></span>
+      <span id="stepInfo">Seus dados</span><span class="dot" id="dotInfo"></span>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- LEFT: booking flow -->
+  <div class="booking-flow" id="bookingFlow">
+    <div class="profile-card">
+      <div class="avatar">AB</div>
+      <div class="profile-info">
+        <h1>Ana Beatriz Estética</h1>
+        <div class="profile-meta">
+          <span class="stars">★★★★★</span>
+          <span>4,9 (128 avaliações)</span>
+          <span>·</span>
+          <span>Campina Grande, PB</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <span class="eyebrow">Passo 1</span>
+      <h2>Escolha o procedimento</h2>
+      <div class="section-sub">Selecione o serviço que deseja agendar.</div>
+      <div class="service-list" id="serviceList">
+        <div class="service" data-name="Limpeza de pele profunda" data-dur="50 min" data-price="120">
+          <div><div class="service-name">Limpeza de pele profunda</div><div class="service-dur">50 min</div></div>
+          <div class="service-price">R$ 120</div>
+        </div>
+        <div class="service" data-name="Drenagem linfática facial" data-dur="40 min" data-price="90">
+          <div><div class="service-name">Drenagem linfática facial</div><div class="service-dur">40 min</div></div>
+          <div class="service-price">R$ 90</div>
+        </div>
+        <div class="service" data-name="Hidratação profunda" data-dur="35 min" data-price="80">
+          <div><div class="service-name">Hidratação profunda</div><div class="service-dur">35 min</div></div>
+          <div class="service-price">R$ 80</div>
+        </div>
+        <div class="service" data-name="Peeling de diamante" data-dur="45 min" data-price="150">
+          <div><div class="service-name">Peeling de diamante</div><div class="service-dur">45 min</div></div>
+          <div class="service-price">R$ 150</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <span class="eyebrow">Passo 2</span>
+      <h2>Escolha data e horário</h2>
+      <div class="section-sub">Horários livres da Ana Beatriz nos próximos dias.</div>
+      <div class="date-row" id="dateRow"></div>
+      <div class="slot-grid" id="slotGrid"></div>
+    </div>
+
+    <div class="section-card">
+      <span class="eyebrow">Passo 3</span>
+      <h2>Seus dados</h2>
+      <div class="section-sub">Usamos só para confirmar e lembrar você do horário.</div>
+      <div class="form-row">
+        <div class="field">
+          <label for="clientName">Nome completo</label>
+          <input type="text" id="clientName" placeholder="Como podemos te chamar?" />
+        </div>
+        <div class="field">
+          <label for="clientPhone">WhatsApp</label>
+          <input type="tel" id="clientPhone" placeholder="(83) 90000-0000" />
+        </div>
+        <button class="btn-primary" id="confirmBtn" disabled>Confirmar agendamento</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: sticky summary -->
+  <div id="summaryWrap">
+    <div class="summary">
+      <span class="eyebrow">Resumo</span>
+      <h3>Seu agendamento</h3>
+      <div class="summary-line">
+        <span class="k">Profissional</span>
+        <span class="v">Ana Beatriz</span>
+      </div>
+      <div class="summary-line">
+        <span class="k">Serviço</span>
+        <span class="v muted" id="sumService">Selecione ao lado</span>
+      </div>
+      <div class="summary-line">
+        <span class="k">Data</span>
+        <span class="v muted" id="sumDate">—</span>
+      </div>
+      <div class="summary-line">
+        <span class="k">Horário</span>
+        <span class="v muted" id="sumTime">—</span>
+      </div>
+      <div class="summary-total">
+        <span class="k">Total</span>
+        <span class="v" id="sumTotal">R$ 0</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- CONFIRMED STATE -->
+<div class="page confirmed" id="confirmedPage">
+  <div class="confirm-card" style="grid-column:1 / -1; max-width:520px; margin:0 auto;">
+    <div class="check">✓</div>
+    <h2>Agendamento confirmado!</h2>
+    <p>Enviamos os detalhes por WhatsApp. A Ana Beatriz está te esperando.</p>
+    <div class="confirm-summary" id="confirmSummary"></div>
+    <div class="confirm-actions">
+      <a href="#" class="btn-ghost2">Adicionar ao calendário</a>
+      <a href="#" class="btn-ghost2">Ver minha ficha</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  const services = document.querySelectorAll('.service');
+  const dateRow = document.getElementById('dateRow');
+  const slotGrid = document.getElementById('slotGrid');
+  const confirmBtn = document.getElementById('confirmBtn');
+  const clientName = document.getElementById('clientName');
+  const clientPhone = document.getElementById('clientPhone');
+
+  const state = { service:null, dur:null, price:0, date:null, dateLabel:null, time:null };
+
+  // ---- services ----
+  services.forEach(el => {
+    el.addEventListener('click', () => {
+      services.forEach(s => s.classList.remove('selected'));
+      el.classList.add('selected');
+      state.service = el.dataset.name;
+      state.dur = el.dataset.dur;
+      state.price = parseInt(el.dataset.price, 10);
+      updateSummary();
+    });
+  });
+
+  // ---- dates (next 7 days) ----
+  const dayNames = ['DOM','SEG','TER','QUA','QUI','SEX','SÁB'];
+  const today = new Date();
+  for (let i = 0; i < 7; i++){
+    const d = new Date(today);
+    d.setDate(today.getDate() + i);
+    const chip = document.createElement('div');
+    chip.className = 'date-chip' + (i === 1 ? ' selected' : '');
+    chip.innerHTML = `<div class="d">${i===0?'Hoje':dayNames[d.getDay()]}</div><div class="n">${d.getDate()}</div>`;
+    chip.dataset.label = i===0 ? 'Hoje' : `${dayNames[d.getDay()]} ${d.getDate()}/${d.getMonth()+1}`;
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.date-chip').forEach(c => c.classList.remove('selected'));
+      chip.classList.add('selected');
+      state.dateLabel = chip.dataset.label;
+      state.time = null;
+      renderSlots();
+      updateSummary();
+    });
+    dateRow.appendChild(chip);
+    if (i === 1) state.dateLabel = chip.dataset.label;
+  }
+
+  // ---- time slots ----
+  const allSlots = ['09:00','09:40','10:20','11:00','13:00','13:40','14:20','15:00','15:40','16:20','17:00','17:40'];
+  const busy = ['10:20','13:40','15:40'];
+  function renderSlots(){
+    slotGrid.innerHTML = '';
+    allSlots.forEach(t => {
+      const btn = document.createElement('div');
+      const isBusy = busy.includes(t);
+      btn.className = 'slot' + (isBusy ? ' disabled' : '');
+      btn.textContent = t;
+      if (!isBusy){
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.slot').forEach(s => s.classList.remove('selected'));
+          btn.classList.add('selected');
+          state.time = t;
+          updateSummary();
+        });
+      }
+      slotGrid.appendChild(btn);
+    });
+  }
+  renderSlots();
+
+  // ---- summary ----
+  function updateSummary(){
+    document.getElementById('sumService').textContent = state.service ? `${state.service} · ${state.dur}` : 'Selecione ao lado';
+    document.getElementById('sumService').classList.toggle('muted', !state.service);
+    document.getElementById('sumDate').textContent = state.dateLabel || '—';
+    document.getElementById('sumDate').classList.remove('muted');
+    document.getElementById('sumTime').textContent = state.time || 'Selecione um horário';
+    document.getElementById('sumTime').classList.toggle('muted', !state.time);
+    document.getElementById('sumTotal').textContent = `R$ ${state.price || 0}`;
+    checkReady();
+  }
+  updateSummary();
+
+  function checkReady(){
+    const ready = state.service && state.time && clientName.value.trim() && clientPhone.value.trim();
+    confirmBtn.disabled = !ready;
+  }
+  clientName.addEventListener('input', checkReady);
+  clientPhone.addEventListener('input', checkReady);
+
+  // ---- confirm ----
+  confirmBtn.addEventListener('click', () => {
+    document.getElementById('bookingFlow').classList.add('hidden');
+    document.getElementById('summaryWrap').classList.add('hidden');
+    const page = document.querySelector('.page:not(.confirmed)');
+    page.style.display = 'none';
+    const confirmed = document.getElementById('confirmedPage');
+    confirmed.classList.add('show');
+    confirmed.style.display = 'grid';
+    document.getElementById('confirmSummary').innerHTML = `
+      <div><span>Serviço</span><b>${state.service}</b></div>
+      <div><span>Data</span><b>${state.dateLabel}</b></div>
+      <div><span>Horário</span><b>${state.time}</b></div>
+      <div><span>Valor</span><b>R$ ${state.price}</b></div>
+      <div><span>Cliente</span><b>${clientName.value}</b></div>
+    `;
+  });
+</script>
+
+</body>
+</html>
